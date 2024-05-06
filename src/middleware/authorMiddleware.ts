@@ -13,13 +13,10 @@ async function verifyAuthor(req: CustomRequest, res: Response, next: NextFunctio
         req.role = decoded.role;
 
         // console.log(req.userId,req.role);
-        
 
         if (req.role !== 'author') {
             return res.status(403).json({ error: 'Forbidden' });
         }
-
-       
         req.authorId = req.userId;
         console.log(req.authorId);
         
