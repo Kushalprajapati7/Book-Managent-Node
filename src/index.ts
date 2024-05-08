@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { container } from './inversify.config'; 
 import * as env from 'dotenv'
+import Database from './config/Database';
 env.config()
 
 
@@ -22,14 +23,9 @@ server.setConfig((app) => {
 
 let app = server.build()
 
-mongoose.connect(MONGO_URI)
-    .then(() => {
-        console.log('Connected to Database ');
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
-    })
-    .catch(error => {
-        console.error('MongoDB connection failed:', error);
-        process.exit();
+const db = new Database(MONGO_URI); // Create an instance of the Database class
+db.connect().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
     });
+});
