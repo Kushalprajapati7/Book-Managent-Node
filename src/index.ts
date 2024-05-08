@@ -23,7 +23,7 @@ server.setConfig((app) => {
 
 let app = server.build()
 
-const db = new Database(MONGO_URI); // Create an instance of the Database class
+const db = new Database(MONGO_URI);
 db.connect().then(() => {
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
