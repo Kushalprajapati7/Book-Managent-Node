@@ -47,9 +47,28 @@ export class autherService{
 
     async findAuthorById(id:string):Promise<IAuther>{
         // console.log("findbyIdfun");
-        
         const author = await AutherModel.findById(id);
         return author
+    }
+
+    async getTotalAuthorsByNationality(): Promise<any[]> {
+        const aggregationPipeline = [
+            {
+                $match : {
+                    nationality: "British"
+                }
+            },
+            {
+               
+                $group: {
+                    _id: "$nationality",
+                    totalAuthors: { $sum: 1 }
+                }
+            }
+        ] as any[];
+
+        const result = await AutherModel.aggregate(aggregationPipeline);
+        return result;
     }
     
     

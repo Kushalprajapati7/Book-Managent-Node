@@ -13,6 +13,7 @@ import { bookController } from "./controllers/Book.Controller";
 
 const container = new Container();
 container.bind<userController>("userController").to(userController)
+// container.bind<userController>("userController").toSelf();
 container.bind<UserService>("UserService").to(UserService)
 
 container.bind<autherController>("autherController").to(autherController)

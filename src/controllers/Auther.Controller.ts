@@ -27,6 +27,11 @@ export class autherController {
     async updateAuther(req: CustomRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
+            const author = await this.AutherService.findAuthorById(id);
+            if(!author){
+                res.status(Err_CODES.NOT_FOUND).json(Err_MESSAGES.NOT_FOUND)
+                return
+            }
             const { name, biography, nationality } = req.body;
             const updatedAuther = await this.AutherService.updateAuther(id, name, biography, nationality);
             res.status(Err_CODES.SUCCESSED).json(updatedAuther)
@@ -43,6 +48,11 @@ export class autherController {
         try {
             const id = req.params.id;
             // const {name,biography,nationality} =req.body;
+            const author = await this.AutherService.findAuthorById(id);
+            if(!author){
+                res.status(Err_CODES.BAD_REQUEST).json(Err_MESSAGES.BAD_REQUEST)
+                return
+            }
             const deleteAuther = await this.AutherService.deleteAuther(id);
             res.status(Err_CODES.SUCCESSED).json(Err_MESSAGES.SUCCESSED)
         }
@@ -107,5 +117,20 @@ export class autherController {
             console.log("Error while filtering authors", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @httpGet('/bynatinality', verifyToken)
+    async getTotalAuthorsByNationality(req:CustomRequest, res:Response):Promise<void>{
+        try{
+            const authors = await this.AutherService.getTotalAuthorsByNationality();
+            console.log(authors);
+            res.status(Err_CODES.SUCCESSED).json(authors);
+            
+        }
+        catch (error) {
+            console.log("Error while filtering authors", error);
+            res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

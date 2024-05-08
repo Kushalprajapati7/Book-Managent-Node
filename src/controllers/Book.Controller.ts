@@ -61,6 +61,11 @@ export class bookController {
     async updateBook(req:CustomRequest, res:Response):Promise<void>{
         try{
             const id = req.params.id;
+            const book = await this.BookService.findBookById(id);
+            if(!book){
+                res.status(Err_CODES.NOT_FOUND).json(Err_MESSAGES.NOT_FOUND)
+                return
+            }
             const { title, author, category, ISBN, description, price } = req.body;
 
             const bookAuthor = await this.AuthService.findAuthorById(author)
@@ -94,8 +99,9 @@ export class bookController {
     async deleteBook(req:CustomRequest,res:Response):Promise<void>{
         try{
             const id  = req.params.id;
+            
             const book = await this.BookService.findBookById(id);
-            console.log(book);
+            // console.log(book);
             
             if(!book){
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Invalid book id" });

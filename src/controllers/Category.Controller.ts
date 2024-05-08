@@ -28,6 +28,11 @@ export class categoryController{
     async updateCategory(req: CustomRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
+            const category = await this.CategoryService.getCategoryById(id);
+            if(!category){
+                res.status(Err_CODES.NOT_FOUND).json(Err_MESSAGES.NOT_FOUND)
+                return
+            }
             const {name, description} = req.body;
 
             const updatedCategory = await this.CategoryService.updateCategory(id, name, description);
@@ -43,6 +48,11 @@ export class categoryController{
     async deleteCategory(req: CustomRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
+            const category = await this.CategoryService.getCategoryById(id);
+            if(!category){
+                res.status(Err_CODES.BAD_REQUEST).json(Err_MESSAGES.BAD_REQUEST)
+                return
+            }
             // const {name,biography,nationality} =req.body;
             const deleteCategory = await this.CategoryService.deleteCategory(id);
             res.status(Err_CODES.SUCCESSED).json(Err_MESSAGES.SUCCESSED)

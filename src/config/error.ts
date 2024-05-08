@@ -7,7 +7,8 @@ export const Err_CODES = {
     BAD_REQUEST: 400,
     SUCCESSED: 200,
     CREATED:201, 
-    SESSIONEXPIRED:440   
+    SESSIONEXPIRED:440,
+    Forbidden :403, 
 
 };
 
@@ -18,6 +19,14 @@ export const Err_MESSAGES = {
     BAD_REQUEST: 'Bad request',
     SUCCESSED : 'Success',
     CREATED : 'Cretaed',
-    SESSIONEXPIRED: 'Session expired'
+    SESSIONEXPIRED: 'Session expired',
+    UserCreate: 'User Created Successfully',
+    InvalidUserName: 'User Name is Not Valid',
+    InvalidAuthorName: 'Author Name is Not Valid',
+    InvalidPassword: 'Password Incorrect',
+    Forbidden: 'Forbidden',
+    Token: 'Please Enter Token First',
+    TokenExpired : 'Token Expired, Login Again'
 
 };
+
