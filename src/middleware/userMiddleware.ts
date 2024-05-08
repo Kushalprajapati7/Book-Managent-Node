@@ -8,11 +8,16 @@ async function verifyToken(req: CustomRequest, res: Response, next: NextFunction
     if (!token) return res.status(401).json({ error: 'Access denied' });
 
     try {
-        const decoded = jwt.verify(token, 'KP') as { userId: string };
-        // console.log("d",decoded);
+        const decoded = jwt.verify(token, 'KP') as { userId: string , role:string};
+
+        console.log("d",decoded);
         
         req.userId = decoded.userId;
-        // console.log(req.userId);
+        req.role = decoded.role;
+
+        console.log(req.role);
+
+
         
         next();
     } catch (error) {

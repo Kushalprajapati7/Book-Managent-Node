@@ -31,6 +31,8 @@ export class userController {
         try {
             const { username, password } = req.body;
             const user: any = await this.userService.getUserByUsername(username);
+            console.log("userdata",user);
+            
 
             if (!user) {
                 res.status(401).json({ error: 'Authentication failed' });
@@ -43,9 +45,15 @@ export class userController {
                 res.status(401).json({ error: 'Authentication failed' });
                 return
             }
-            const token = jwt.sign({ userId: user._id }, 'KP', { expiresIn: '1h' })
+
+            const payload = {
+                userId: user._id,
+                role: user.role // Assuming user.role contains the role of the user
+            };
+            // const token = jwt.sign({ userId: user._id }, 'KP', { expiresIn: '1h' })
+            const token = jwt.sign(payload, 'KP', { expiresIn: '1h' })
             if (user.role === 'author') {
-                res.status(403).json({ error: 'Forbidden' }); // Forbid authors from using this endpoint
+                res.status(403).json({ error: 'Forbidden' }); 
                 return;
             }
             res.status(200).json({ token })
@@ -79,7 +87,12 @@ export class userController {
                 return;
             }
 
-            const token = jwt.sign({ userId: author._id }, 'KP', { expiresIn: '1h' });
+            const payload = {
+                userId: author._id,
+                role: author.role
+            }
+
+            const token = jwt.sign(payload, 'KP', { expiresIn: '1h' });
             res.status(200).json({ token });
         }
         catch (error) {

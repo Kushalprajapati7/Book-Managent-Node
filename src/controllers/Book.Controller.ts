@@ -7,6 +7,7 @@ import { bookService } from "../services/Book.Service";
 import { all, controller, httpDelete, httpGet, httpPost, httpPut } from "inversify-express-utils";
 import { autherService } from "../services/Auther.Service";
 import { categoryService } from "../services/Category.Service";
+import verifyAuthor from "../middleware/authorMiddleware";
 
 
 @controller("/book")
@@ -22,19 +23,15 @@ export class bookController {
         try {
             const userId = req.userId;
             // console.log(userId);
-
             const { title, author, category, ISBN, description, price } = req.body;
             // console.log(author);
-
             const bookAuthor = await this.AuthService.findAuthorById(author)
             // console.log("auther",bookAuthor);
             if (!bookAuthor) {
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Author is required" });
                 return
             }
-
             // console.log(bookAuthor.name);
-
             const bookCategory = await this.CategoryService.getCategoryById(category)
             // console.log("category",bookCategory);
 
@@ -43,13 +40,9 @@ export class bookController {
                 return
             }
             // console.log(bookCategory.name);
-
-
             // console.log(author);
-
-            const newBook = await this.BookService.addBook(userId, title, bookAuthor.name, bookCategory.name, ISBN, description, price)
+            const newBook = await this.BookService.addBook(userId,title, bookAuthor.name, bookCategory.name, ISBN, description, price)
             res.status(Err_CODES.SUCCESSED).json(newBook)
-
         }
         catch (error) {
             console.log("Error while Adding new book", error);
@@ -57,9 +50,45 @@ export class bookController {
         }
     }
 
-    @httpPut('/update/:id', verifyToken)
-    async updateBook(req: CustomRequest, res: Response): Promise<void> {
+    @httpPost('/addByAuthor', verifyAuthor)
+    async addBookByAuthor(req: CustomRequest, res: Response): Promise<void> {
         try {
+            const authorId = req.authorId;
+            const userId = req.userId;
+            console.log(authorId);
+            
+            // console.log(userId);
+            const { title, author, category, ISBN, description, price } = req.body;
+            
+            // console.log(author);
+            const bookAuthor = await this.AuthService.findAuthorById(author)
+            // console.log("auther",bookAuthor);
+            if (!bookAuthor) {
+                res.status(Err_CODES.BAD_REQUEST).json({ message: "Author is required" });
+                return
+            }
+            // console.log(bookAuthor.name);
+            const bookCategory = await this.CategoryService.getCategoryById(category)
+            // console.log("category",bookCategory);
+
+            if (!bookCategory) {
+                res.status(Err_CODES.BAD_REQUEST).json({ message: "Invalid category" });
+                return
+            }
+            // console.log(bookCategory.name);
+            // console.log(author);
+            const newBook = await this.BookService.addBook(userId,title, bookAuthor.name, bookCategory.name, ISBN, description, price)
+            res.status(Err_CODES.SUCCESSED).json(newBook)
+        }
+        catch (error) {
+            console.log("Error while Adding new book", error);
+            res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @httpPut('/update/:id',verifyToken)
+    async updateBook(req:CustomRequest, res:Response):Promise<void>{
+        try{
             const id = req.params.id;
             const { title, author, category, ISBN, description, price } = req.body;
 
@@ -80,24 +109,24 @@ export class bookController {
                 return
             }
             // console.log(bookCategory.name);
-            const updatedBook = await this.BookService.updateBook(id, title, bookAuthor.name, bookCategory.name, ISBN, description, price)
+            const updatedBook = await this.BookService.updateBook(id,title, bookAuthor.name, bookCategory.name, ISBN, description, price)
             res.status(Err_CODES.SUCCESSED).json(updatedBook)
 
         }
-        catch (error) {
+        catch(error){
             console.log("Error while Updating the book", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
 
-    @httpDelete("/remove/:id", verifyToken)
-    async deleteBook(req: CustomRequest, res: Response): Promise<void> {
-        try {
-            const id = req.params.id;
+    @httpDelete("/remove/:id",verifyToken)
+    async deleteBook(req:CustomRequest,res:Response):Promise<void>{
+        try{
+            const id  = req.params.id;
             const book = await this.BookService.findBookById(id);
             console.log(book);
-
-            if (!book) {
+            
+            if(!book){
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Invalid book id" });
                 return
             }
@@ -106,35 +135,35 @@ export class bookController {
             res.status(Err_CODES.SUCCESSED).json(Err_MESSAGES.SUCCESSED)
 
         }
-        catch (error) {
+        catch(error){
             console.log("Error while Deleting Book", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
 
-    @httpGet("/all", verifyToken)
-    async showAllBook(req: CustomRequest, res: Response): Promise<void> {
-        try {
+    @httpGet("/all",verifyToken)
+    async showAllBook(req:CustomRequest,res:Response):Promise<void>{
+        try{
             // const id  = req.params.id;
             // const book = await this.BookService.findBookById(id);
             // console.log(book);
 
             const userId = req.userId;
             console.log(userId);
-
-
-            if (!userId) {
+            
+            
+            if(!userId){
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "No Such book found for loggedin user" });
                 return
             }
 
             const allBook = await this.BookService.findBooksByUserId(userId);
             console.log(allBook);
-
+            
             res.status(Err_CODES.SUCCESSED).json(allBook)
 
         }
-        catch (error) {
+        catch(error){
             console.log("Error while Showing books Book", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
@@ -142,7 +171,7 @@ export class bookController {
 
     @httpGet('/Pagination', verifyToken)
     async getBooksByUserPaginated(req: CustomRequest, res: Response): Promise<void> {
-        try {
+        try{
             // const id  = req.params.id;
             // const book = await this.BookService.findBookById(id);
             // console.log(book);
@@ -155,33 +184,33 @@ export class bookController {
 
             const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
             // console.log(limit);
-
-
-            if (!userId) {
+            
+            
+            if(!userId){
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "No Such book found for loggedin user" });
                 return
             }
 
-            const allBook = await this.BookService.getAllBooksPaginated(userId, page, limit);
+            const allBook = await this.BookService.getAllBooksPaginated(userId,page,limit);
             console.log(allBook);
-
+            
             res.status(Err_CODES.SUCCESSED).json(allBook)
 
         }
-        catch (error) {
+        catch(error){
             console.log("Error while Showing books Book", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
+    
 
-
-    @httpGet("/search", verifyToken)
+    @httpGet("/search",verifyToken)
     async searchBooks(req: CustomRequest, res: Response): Promise<void> {
         try {
-            const userId = req.userId;
-            const query = req.query.q as string;
+            const userId = req.userId; 
+            const query = req.query.q as string; 
             // console.log(query);
-
+            
             const searchResults = await this.BookService.searchBooks(userId, query);
             res.status(200).json(searchResults);
         } catch (error) {
