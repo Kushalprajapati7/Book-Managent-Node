@@ -1,7 +1,6 @@
 import { inject,injectable } from "inversify";
 import { BookModel,IBook } from "../models/Book.Model";
 import "reflect-metadata"
-import { Types } from "mongoose";
 
 @injectable()
 export class bookService{

@@ -123,7 +123,7 @@ export class autherController {
     async getTotalAuthorsByNationality(req:CustomRequest, res:Response):Promise<void>{
         try{
             const authors = await this.AutherService.getTotalAuthorsByNationality();
-            console.log(authors);
+            // console.log(authors);
             res.status(Err_CODES.SUCCESSED).json(authors);
             
         }

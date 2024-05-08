@@ -43,8 +43,6 @@ export class bookController {
                 return
             }
             // console.log(bookCategory.name);
-
-
             // console.log(author);
 
             const newBook = await this.BookService.addBook(userId,title, bookAuthor.name, bookCategory.name, ISBN, description, price)
@@ -126,7 +124,7 @@ export class bookController {
             // console.log(book);
 
             const userId = req.userId;
-            console.log(userId);
+            // console.log(userId);
             
             
             if(!userId){
@@ -135,7 +133,7 @@ export class bookController {
             }
 
             const allBook = await this.BookService.findBooksByUserId(userId);
-            console.log(allBook);
+            // console.log(allBook);
             
             res.status(Err_CODES.SUCCESSED).json(allBook)
 
@@ -169,7 +167,7 @@ export class bookController {
             }
 
             const allBook = await this.BookService.getAllBooksPaginated(userId,page,limit);
-            console.log(allBook);
+            // console.log(allBook);
             
             res.status(Err_CODES.SUCCESSED).json(allBook)
 
@@ -179,7 +177,7 @@ export class bookController {
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
-    
+
 
     @httpGet("/search",verifyToken)
     async searchBooks(req: CustomRequest, res: Response): Promise<void> {

@@ -84,6 +84,7 @@ export class userController {
             res.status(Err_CODES.SUCCESSED).json({ token });
         }
         catch (error) {
+            
             console.error("Error author login");
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json({ message: error.message })
 

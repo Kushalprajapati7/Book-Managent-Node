@@ -19,7 +19,7 @@ async function verifyAuthor(req: CustomRequest, res: Response, next: NextFunctio
             return res.status(403).json({ error: 'Forbidden' });
         }
         req.authorId = req.userId;
-        console.log(req.authorId);
+        // console.log(req.authorId);
         
 
         next();
