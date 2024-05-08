@@ -12,7 +12,10 @@ import { bookController } from "./controllers/Book.Controller";
 
 
 const container = new Container();
+<<<<<<< HEAD
 
+=======
+>>>>>>> a0752a0774e74b328403341a3f59f7ac3b365a7e
 container.bind<userController>("userController").to(userController)
 container.bind<UserService>("UserService").to(UserService)
 

@@ -9,7 +9,7 @@ async function verifyToken(req: CustomRequest, res: Response, next: NextFunction
 
     try {
         const decoded = jwt.verify(token, 'KP') as { userId: string , role:string};
-
+        
         console.log("d",decoded);
         
         req.userId = decoded.userId;
@@ -18,8 +18,6 @@ async function verifyToken(req: CustomRequest, res: Response, next: NextFunction
         console.log(req.role);
 
 
-        
-        next();
     } catch (error) {
         res.status(401).json({ error: 'Invalid token' });
     }
