@@ -7,7 +7,6 @@ import { bookService } from "../services/Book.Service";
 import { all, controller, httpDelete, httpGet, httpPost, httpPut } from "inversify-express-utils";
 import { autherService } from "../services/Auther.Service";
 import { categoryService } from "../services/Category.Service";
-import verifyAuthor from "../middleware/authorMiddleware";
 
 
 @controller("/book")
@@ -23,15 +22,19 @@ export class bookController {
         try {
             const userId = req.userId;
             // console.log(userId);
+            
             const { title, author, category, ISBN, description, price } = req.body;
             // console.log(author);
+
             const bookAuthor = await this.AuthService.findAuthorById(author)
             // console.log("auther",bookAuthor);
             if (!bookAuthor) {
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Author is required" });
                 return
             }
+
             // console.log(bookAuthor.name);
+
             const bookCategory = await this.CategoryService.getCategoryById(category)
             // console.log("category",bookCategory);
 
@@ -40,16 +43,19 @@ export class bookController {
                 return
             }
             // console.log(bookCategory.name);
+
+
             // console.log(author);
+
             const newBook = await this.BookService.addBook(userId,title, bookAuthor.name, bookCategory.name, ISBN, description, price)
             res.status(Err_CODES.SUCCESSED).json(newBook)
+
         }
         catch (error) {
             console.log("Error while Adding new book", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
-
 
     @httpPut('/update/:id',verifyToken)
     async updateBook(req:CustomRequest, res:Response):Promise<void>{
