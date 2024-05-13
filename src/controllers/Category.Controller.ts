@@ -5,10 +5,11 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from "inversify-ex
 import CustomRequest from "../types/customRequest";
 import { Err_CODES, Err_MESSAGES } from "../config/error";
 import verifyToken from "../middleware/userMiddleware";
+import { TYPES } from "../types/types";
 
 @controller("/category")
 export class categoryController{
-    constructor(@inject('categoryService') private CategoryService: categoryService) { }
+    constructor(@inject(TYPES.CategoryService) private CategoryService: categoryService) { }
 
     @httpPost('/add',verifyToken)
     async addCategory(req: CustomRequest, res: Response): Promise<void> {

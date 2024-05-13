@@ -1,77 +1,78 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
-import { autherService } from "../services/Auther.Service";
+import { authorService } from "../services/Author.Service";
 import { controller, httpDelete, httpGet, httpPost, httpPut } from "inversify-express-utils";
 import CustomRequest from "../types/customRequest";
 import { Err_CODES, Err_MESSAGES } from "../config/error";
 import verifyToken from "../middleware/userMiddleware";
+import { TYPES } from "../types/types";
 
-@controller("/auther")
-export class autherController {
-    constructor(@inject('autherService') private AutherService: autherService) { }
+@controller("/author")
+export class authorController {
+    constructor(@inject(TYPES.AuthorService) private authorService: authorService) { }
 
     @httpPost('/add', verifyToken)
-    async addAuther(req: CustomRequest, res: Response): Promise<void> {
+    async addauthor(req: CustomRequest, res: Response): Promise<void> {
         try {
             const { name, biography, nationality } = req.body;
-            const newAuther = await this.AutherService.createAuther(name, biography, nationality);
-            res.status(Err_CODES.SUCCESSED).json(newAuther)
+            const newauthor = await this.authorService.createauthor(name, biography, nationality);
+            res.status(Err_CODES.SUCCESSED).json(newauthor)
         }
         catch (error) {
-            console.log("Error while Adding new auther", error);
+            console.log("Error while Adding new author", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
 
     @httpPut('/update/:id', verifyToken)
-    async updateAuther(req: CustomRequest, res: Response): Promise<void> {
+    async updateauthor(req: CustomRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
-            const author = await this.AutherService.findAuthorById(id);
+            const author = await this.authorService.findAuthorById(id);
             if(!author){
                 res.status(Err_CODES.NOT_FOUND).json(Err_MESSAGES.NOT_FOUND)
                 return
             }
             const { name, biography, nationality } = req.body;
-            const updatedAuther = await this.AutherService.updateAuther(id, name, biography, nationality);
-            res.status(Err_CODES.SUCCESSED).json(updatedAuther)
+            const updatedauthor = await this.authorService.updateauthor(id, name, biography, nationality);
+            res.status(Err_CODES.SUCCESSED).json(updatedauthor)
         }
         catch (error) {
-            console.log("Error while Updating auther", error);
+            console.log("Error while Updating author", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
 
 
     @httpDelete('/remove/:id', verifyToken)
-    async deleteAuther(req: CustomRequest, res: Response): Promise<void> {
+    async deleteauthor(req: CustomRequest, res: Response): Promise<void> {
         try {
             const id = req.params.id;
             // const {name,biography,nationality} =req.body;
-            const author = await this.AutherService.findAuthorById(id);
+            const author = await this.authorService.findAuthorById(id);
             if(!author){
                 res.status(Err_CODES.BAD_REQUEST).json(Err_MESSAGES.BAD_REQUEST)
                 return
             }
-            const deleteAuther = await this.AutherService.deleteAuther(id);
+            const deleteauthor = await this.authorService.deleteauthor(id);
             res.status(Err_CODES.SUCCESSED).json(Err_MESSAGES.SUCCESSED)
         }
-        catch (error) {
-            console.log("Error while Deleting auther", error);
+        catch (error) { 
+            console.log("Error while Deleting author", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
 
     @httpGet('/', verifyToken)
-    async getAllAuther(req: CustomRequest, res: Response): Promise<void> {
+    async getAllauthor(req: CustomRequest, res: Response): Promise<void> {
         try {
             // const id = req.params.id;
             // const {name,biography,nationality} =req.body;
-            const allAuther = await this.AutherService.getAllAuther();
-            res.status(Err_CODES.SUCCESSED).json(allAuther)
+            const allauthor = await this.authorService.getAllauthor();
+            res.status(Err_CODES.SUCCESSED).json(allauthor)
         }
         catch (error) {
-            console.log("Error while Showing all auther", error);
+            console.log("Error while Showing all author", error);
             res.status(Err_CODES.INTERNAL_SERVER_ERROR).json(Err_MESSAGES.INTERNAL_SERVER_ERROR)
         }
     }
@@ -85,7 +86,7 @@ export class autherController {
             const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
             // console.log(limit);
 
-            const allAuthors = await this.AutherService.getAllAuthorsPaginated(page, limit);
+            const allAuthors = await this.authorService.getAllAuthorsPaginated(page, limit);
             res.status(Err_CODES.SUCCESSED).json(allAuthors);
         } catch (error) {
             console.log("Error while retrieving authors", error);
@@ -99,7 +100,7 @@ export class autherController {
             const query = req.query.q as string;
             // console.log(query);
             
-            const searchResults = await this.AutherService.searchAuthors(query);
+            const searchResults = await this.authorService.searchAuthors(query);
             res.status(Err_CODES.SUCCESSED).json(searchResults);
         } catch (error) {
             console.log("Error while searching authors", error);
@@ -111,7 +112,11 @@ export class autherController {
     async filterAuthors(req: CustomRequest, res: Response): Promise<void> {
         try {
             const nationality = req.query.nationality as string;
-            const filteredAuthors = await this.AutherService.filterAuthorsByNationality(nationality);
+            // console.log(nationality);
+            
+            const filteredAuthors = await this.authorService.filterAuthorsByNationality(nationality);
+            // console.log("filteredAuthors0",filteredAuthors);
+            
             res.status(Err_CODES.SUCCESSED).json(filteredAuthors);
         } catch (error) {
             console.log("Error while filtering authors", error);
@@ -122,7 +127,10 @@ export class autherController {
     @httpGet('/bynatinality', verifyToken)
     async getTotalAuthorsByNationality(req:CustomRequest, res:Response):Promise<void>{
         try{
-            const authors = await this.AutherService.getTotalAuthorsByNationality();
+            const nationality:any = req.query.nationality;
+            // console.log(    );
+            
+            const authors = await this.authorService.getTotalAuthorsByNationality(nationality);
             // console.log(authors);
             res.status(Err_CODES.SUCCESSED).json(authors);
             

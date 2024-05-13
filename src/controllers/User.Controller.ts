@@ -6,11 +6,13 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import verifyToken from '../middleware/userMiddleware'
 import { Err_CODES, Err_MESSAGES } from "../config/error";
+import { JwtUtils } from "../utils/jwtUtils";
+import { TYPES } from "../types/types";
 
 
 @controller("/users")
 export class userController {
-    constructor(@inject('UserService') private userService: UserService) { }
+    constructor(@inject(TYPES.UserService) private userService: UserService) { }
 
     @httpPost('/signup')
     async createUser(req: Request, res: Response): Promise<void> {
@@ -44,7 +46,8 @@ export class userController {
                 res.status(Err_CODES.UNAUTHORIZED).json({ error:Err_MESSAGES.InvalidPassword  });
                 return
             }
-            const token = jwt.sign({ userId: user._id }, 'KP', { expiresIn: '1h' })
+            // const token = jwt.sign({ userId: user._id }, 'KP', { expiresIn: '1h' })
+            const token = JwtUtils.generateToken(user._id);
             if (user.role === 'author') {
                 res.status(Err_CODES.Forbidden).json({ error: Err_MESSAGES.Forbidden });
                 return;
@@ -80,7 +83,8 @@ export class userController {
                 return;
             }
 
-            const token = jwt.sign({ userId: author._id }, 'KP', { expiresIn: '1h' });
+            // const token = jwt.sign({ userId: author._id }, 'KP', { expiresIn: '1h' });
+            const token = JwtUtils.generateToken(author._id);
             res.status(Err_CODES.SUCCESSED).json({ token });
         }
         catch (error) {

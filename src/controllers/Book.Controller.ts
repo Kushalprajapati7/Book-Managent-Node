@@ -5,15 +5,17 @@ import verifyToken from "../middleware/userMiddleware";
 import { Err_CODES, Err_MESSAGES } from "../config/error";
 import { bookService } from "../services/Book.Service";
 import { all, controller, httpDelete, httpGet, httpPost, httpPut } from "inversify-express-utils";
-import { autherService } from "../services/Auther.Service";
+import { authorService } from "../services/Author.Service";
 import { categoryService } from "../services/Category.Service";
+import { TYPES } from "../types/types";
+
 
 
 @controller("/book")
 export class bookController {
-    constructor(@inject('bookService') private BookService: bookService,
-        @inject('autherService') private AuthService: autherService,
-        @inject('categoryService') private CategoryService: categoryService
+    constructor(@inject(TYPES.BookService) private BookService: bookService,
+        @inject(TYPES.AuthorService) private AuthService: authorService,
+        @inject(TYPES.CategoryService) private CategoryService: categoryService
     ) { }
 
 
@@ -27,7 +29,7 @@ export class bookController {
             // console.log(author);
 
             const bookAuthor = await this.AuthService.findAuthorById(author)
-            // console.log("auther",bookAuthor);
+            // console.log("author",bookAuthor);
             if (!bookAuthor) {
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Author is required" });
                 return
@@ -67,7 +69,7 @@ export class bookController {
             const { title, author, category, ISBN, description, price } = req.body;
 
             const bookAuthor = await this.AuthService.findAuthorById(author)
-            // console.log("auther",bookAuthor);
+            // console.log("author",bookAuthor);
             if (!bookAuthor) {
                 res.status(Err_CODES.BAD_REQUEST).json({ message: "Author is required" });
                 return
@@ -184,9 +186,16 @@ export class bookController {
         try {
             const userId = req.userId; 
             const query = req.query.q as string; 
+            if(!query){
+            res.status(Err_CODES.NOT_FOUND).json(Err_MESSAGES.SearchQuery);
+                return
+            }
             // console.log(query);
+            const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined;
+            const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined;
+    
             
-            const searchResults = await this.BookService.searchBooks(userId, query);
+            const searchResults = await this.BookService.searchBooks(userId, query,minPrice,maxPrice);
             res.status(200).json(searchResults);
         } catch (error) {
             console.error("Error while searching books:", error);

@@ -26,7 +26,8 @@ export const Err_MESSAGES = {
     InvalidPassword: 'Password Incorrect',
     Forbidden: 'Forbidden',
     Token: 'Please Enter Token First',
-    TokenExpired : 'Token Expired, Login Again'
+    TokenExpired : 'Token Expired, Login Again',
+    SearchQuery: 'Enter the search query'
 
 };
 
